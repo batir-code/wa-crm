@@ -4,8 +4,48 @@ services:
     restart: unless-stopped
     ports:
       - "${PORT:-3010}:3010"
-    env_file:
-      - .env
+    environment:
+      # Database Configuration
+      DBHOST: ${DBHOST:-localhost}
+      DBPORT: ${DBPORT:-3306}
+      DBUSER: ${DBUSER:-root}
+      DBPASS: ${DBPASS:-}
+      DBNAME: ${DBNAME:-wa_crm}
+      
+      # Application Configuration
+      PORT: 3010
+      NODE_ENV: ${NODE_ENV:-production}
+      
+      # JWT Configuration
+      JWTKEY: ${JWTKEY:-your-super-secret-jwt-key-change-this}
+      
+      # Frontend/Backend URLs
+      FRONTENDURI: ${FRONTENDURI:-http://localhost:3010}
+      BACKURI: ${BACKURI:-http://localhost:3010}
+      
+      # Stripe Configuration (Optional)
+      STRIPE_LANG: ${STRIPE_LANG:-en}
+      
+      # Email Configuration (Optional)
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+      
+      # AI API Keys (Optional)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      
+      # WhatsApp Business API (Optional)
+      META_ACCESS_TOKEN: ${META_ACCESS_TOKEN:-}
+      META_VERIFY_TOKEN: ${META_VERIFY_TOKEN:-}
+      
+    volumes:
+      - ./sessions:/app/sessions
+      - ./media:/app/media
+      - ./meta-media:/app/meta-media
+      - ./client/public:/app/client/public
     networks:
       - wa-crm-network
 
