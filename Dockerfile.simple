@@ -1,0 +1,23 @@
+# Simple Dockerfile for WhatsApp CRM
+FROM node:18
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p sessions media meta-media
+
+# Expose port
+EXPOSE 3010
+
+# Start the application
+CMD ["node", "server.js"]
