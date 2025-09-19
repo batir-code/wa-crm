@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp CRM - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #25d366;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e55a5a;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-section h1 {
+            color: #25d366;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.messages {
+            background: #25d366;
+        }
+
+        .stat-icon.contacts {
+            background: #4cd080;
+        }
+
+        .stat-icon.chatbots {
+            background: #ff6b6b;
+        }
+
+        .stat-icon.broadcasts {
+            background: #ffa726;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-content p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #25d366;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .feature-btn:hover {
+            background: #1a8c40;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp CRM
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userName">User</span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="welcome-section">
+            <h1>Welcome to WhatsApp CRM Dashboard</h1>
+            <p>Manage your WhatsApp Business communications with ease</p>
+        </div>
+
+        <div id="loadingMessage" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            Loading dashboard data...
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <div id="dashboardContent" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon messages">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalMessages">0</h3>
+                        <p>Total Messages</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon contacts">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalContacts">0</h3>
+                        <p>Total Contacts</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon chatbots">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="activeChatbots">0</h3>
+                        <p>Active Chatbots</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon broadcasts">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalBroadcasts">0</h3>
+                        <p>Broadcasts Sent</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Chat Management</h3>
+                    <p>Manage all your WhatsApp conversations in one place with real-time messaging and automated responses.</p>
+                    <button class="feature-btn" onclick="openChatManagement()">
+                        <i class="fas fa-arrow-right"></i>
+                        Open Chats
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Chatbot</h3>
+                    <p>Deploy intelligent chatbots powered by OpenAI, Gemini, or DeepSeek for automated customer support.</p>
+                    <button class="feature-btn" onclick="openChatbot()">
+                        <i class="fas fa-arrow-right"></i>
+                        Manage Chatbots
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3>Broadcast Messages</h3>
+                    <p>Send bulk messages to multiple contacts with personalized templates and scheduling options.</p>
+                    <button class="feature-btn" onclick="openBroadcast()">
+                        <i class="fas fa-arrow-right"></i>
+                        Send Broadcast
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>QR Login</h3>
+                    <p>Connect your WhatsApp account using QR code for seamless integration.</p>
+                    <button class="feature-btn" onclick="openQRLogin()">
+                        <i class="fas fa-arrow-right"></i>
+                        Connect WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check authentication
+        const userToken = localStorage.getItem('userToken');
+        if (!userToken) {
+            window.location.href = 'login.html';
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/user/get_dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayDashboardData(data);
+                } else {
+                    throw new Error('Failed to load dashboard data');
+                }
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                showError('Failed to load dashboard data. Please try again.');
+                // Show basic dashboard without data
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            }
+        }
+
+        // Display dashboard data
+        function displayDashboardData(data) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+
+            // Update stats (if data is available)
+            if (data.totalMessages) {
+                document.getElementById('totalMessages').textContent = data.totalMessages;
+            }
+            if (data.totalContacts) {
+                document.getElementById('totalContacts').textContent = data.totalContacts;
+            }
+            if (data.activeChatbots) {
+                document.getElementById('activeChatbots').textContent = data.activeChatbots;
+            }
+            if (data.totalBroadcasts) {
+                document.getElementById('totalBroadcasts').textContent = data.totalBroadcasts;
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Feature button handlers
+        function openChatManagement() {
+            alert('Chat Management feature coming soon!');
+        }
+
+        function openChatbot() {
+            alert('Chatbot Management feature coming soon!');
+        }
+
+        function openBroadcast() {
+            alert('Broadcast feature coming soon!');
+        }
+
+        function openQRLogin() {
+            window.open('/api/qr', '_blank');
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userToken');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>

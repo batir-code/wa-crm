@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp CRM - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #25d366;
+        }
+
+        .admin-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e55a5a;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-section h1 {
+            color: #25d366;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.users {
+            background: #25d366;
+        }
+
+        .stat-icon.orders {
+            background: #4cd080;
+        }
+
+        .stat-icon.revenue {
+            background: #ff6b6b;
+        }
+
+        .stat-icon.agents {
+            background: #ffa726;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-content p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .admin-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #25d366;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .feature-btn:hover {
+            background: #1a8c40;
+            transform: translateY(-2px);
+        }
+
+        .feature-btn.admin {
+            background: #ff6b6b;
+        }
+
+        .feature-btn.admin:hover {
+            background: #e55a5a;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp CRM
+            <div class="admin-badge">
+                <i class="fas fa-shield-alt"></i>
+                Admin
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="adminAvatar">A</div>
+            <span id="adminName">Admin</span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="welcome-section">
+            <h1>Admin Dashboard</h1>
+            <p>Manage your WhatsApp CRM system and monitor all activities</p>
+        </div>
+
+        <div id="loadingMessage" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            Loading admin dashboard data...
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <div id="dashboardContent" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orders">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalOrders">0</h3>
+                        <p>Total Orders</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalRevenue">$0</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon agents">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalAgents">0</h3>
+                        <p>Active Agents</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>User Management</h3>
+                    <p>Manage all users, their subscriptions, and account settings.</p>
+                    <button class="feature-btn admin" onclick="openUserManagement()">
+                        <i class="fas fa-arrow-right"></i>
+                        Manage Users
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>System Settings</h3>
+                    <p>Configure system settings, plans, and application preferences.</p>
+                    <button class="feature-btn admin" onclick="openSystemSettings()">
+                        <i class="fas fa-arrow-right"></i>
+                        System Settings
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analytics</h3>
+                    <p>View detailed analytics and reports for your WhatsApp CRM system.</p>
+                    <button class="feature-btn admin" onclick="openAnalytics()">
+                        <i class="fas fa-arrow-right"></i>
+                        View Analytics
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Security</h3>
+                    <p>Manage security settings, API keys, and access controls.</p>
+                    <button class="feature-btn admin" onclick="openSecurity()">
+                        <i class="fas fa-arrow-right"></i>
+                        Security Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check admin authentication
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) {
+            window.location.href = 'admin-login.html';
+        }
+
+        // Load admin dashboard data
+        async function loadAdminDashboard() {
+            try {
+                const response = await fetch('/api/admin/get_dashboard_for_user', {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayAdminDashboardData(data);
+                } else {
+                    throw new Error('Failed to load admin dashboard data');
+                }
+            } catch (error) {
+                console.error('Admin dashboard load error:', error);
+                showError('Failed to load admin dashboard data. Please try again.');
+                // Show basic dashboard without data
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            }
+        }
+
+        // Display admin dashboard data
+        function displayAdminDashboardData(data) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+
+            // Update stats (if data is available)
+            if (data.totalUsers) {
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+            }
+            if (data.totalOrders) {
+                document.getElementById('totalOrders').textContent = data.totalOrders;
+            }
+            if (data.totalRevenue) {
+                document.getElementById('totalRevenue').textContent = `$${data.totalRevenue}`;
+            }
+            if (data.totalAgents) {
+                document.getElementById('totalAgents').textContent = data.totalAgents;
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Admin feature button handlers
+        function openUserManagement() {
+            alert('User Management feature coming soon!');
+        }
+
+        function openSystemSettings() {
+            alert('System Settings feature coming soon!');
+        }
+
+        function openAnalytics() {
+            alert('Analytics feature coming soon!');
+        }
+
+        function openSecurity() {
+            alert('Security Settings feature coming soon!');
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Initialize admin dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAdminDashboard();
+        });
+    </script>
+</body>
+</html>
