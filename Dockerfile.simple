@@ -4,8 +4,15 @@ FROM node:18
 # Set working directory
 WORKDIR /app
 
+# Install git for GitHub dependencies
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 # Copy package files
 COPY package*.json ./
+
+# Configure npm for GitHub access
+RUN npm config set git-tag-version false && \
+    npm config set commit-hooks false
 
 # Install dependencies
 RUN npm install
@@ -15,6 +22,10 @@ COPY . .
 
 # Create necessary directories
 RUN mkdir -p sessions media meta-media
+
+# Set proper permissions
+RUN chown -R node:node /app
+USER node
 
 # Expose port
 EXPOSE 3010

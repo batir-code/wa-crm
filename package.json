@@ -13,7 +13,7 @@
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
     "@google/generative-ai": "^0.24.1",
-    "@whiskeysockets/baileys": "github:WhiskeySockets/Baileys#fix-catch-unhandled-timeout-error",
+    "@whiskeysockets/baileys": "^6.7.18",
     "archiver": "^6.0.2",
     "axios": "^1.6.7",
     "baileys": "^6.7.18",
