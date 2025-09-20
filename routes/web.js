@@ -415,6 +415,38 @@ router.get("/get_app_version", async (req, res) => {
   }
 });
 
+// check database connection status
+router.get("/check_database", async (req, res) => {
+  try {
+    // Test database connection with a simple query
+    const result = await query("SELECT 1 as test", []);
+    
+    if (result && result.length > 0) {
+      res.json({ 
+        success: true, 
+        status: "connected",
+        message: "Database connection successful",
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        status: "error",
+        message: "Database query failed"
+      });
+    }
+  } catch (err) {
+    console.log("Database connection error:", err);
+    res.json({ 
+      success: false, 
+      status: "error",
+      message: "Database connection failed",
+      error: err.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // install app
 router.post("/install_app", async (req, res) => {
   try {

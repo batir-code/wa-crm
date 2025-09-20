@@ -231,6 +231,49 @@
             animation: pulse 2s infinite;
         }
 
+        .status-dot.error {
+            background: #dc3545;
+            animation: none;
+        }
+
+        .status-dot.warning {
+            background: #ffc107;
+            animation: pulse 2s infinite;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .status-item.server {
+            border-left: 4px solid #28a745;
+        }
+
+        .status-item.database {
+            border-left: 4px solid #007bff;
+        }
+
+        .status-item.database.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .status-item.database.warning {
+            border-left: 4px solid #ffc107;
+        }
+
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -284,9 +327,17 @@
         <div class="welcome-section">
             <h1>Welcome to WhatsApp CRM</h1>
             <p>Manage your WhatsApp Business communications with ease</p>
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                System is running
+            
+            <div class="status-grid">
+                <div class="status-item server" id="serverStatus">
+                    <div class="status-dot" id="serverDot"></div>
+                    <span id="serverText">Server: Checking...</span>
+                </div>
+                
+                <div class="status-item database" id="databaseStatus">
+                    <div class="status-dot" id="databaseDot"></div>
+                    <span id="databaseText">Database: Checking...</span>
+                </div>
             </div>
         </div>
 
@@ -365,17 +416,75 @@
         }
 
         // Check server status
-        fetch('/api/web')
-            .then(response => {
-                if (response.ok) {
-                    console.log('Server is running');
-                } else {
-                    console.log('Server response:', response.status);
-                }
-            })
-            .catch(error => {
-                console.log('Server check failed:', error);
-            });
+        function checkServerStatus() {
+            fetch('/api/web')
+                .then(response => {
+                    if (response.ok) {
+                        updateServerStatus('connected', 'Server: Online');
+                        checkDatabaseStatus();
+                    } else {
+                        updateServerStatus('error', 'Server: Error');
+                    }
+                })
+                .catch(error => {
+                    console.log('Server check failed:', error);
+                    updateServerStatus('error', 'Server: Offline');
+                });
+        }
+
+        // Check database status
+        function checkDatabaseStatus() {
+            fetch('/api/web/check_database')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateDatabaseStatus('connected', 'Database: Connected');
+                    } else {
+                        updateDatabaseStatus('error', 'Database: Error');
+                    }
+                })
+                .catch(error => {
+                    console.log('Database check failed:', error);
+                    updateDatabaseStatus('error', 'Database: Offline');
+                });
+        }
+
+        // Update server status
+        function updateServerStatus(status, text) {
+            const serverDot = document.getElementById('serverDot');
+            const serverText = document.getElementById('serverText');
+            const serverStatus = document.getElementById('serverStatus');
+            
+            serverText.textContent = text;
+            
+            if (status === 'connected') {
+                serverDot.className = 'status-dot';
+                serverStatus.className = 'status-item server';
+            } else {
+                serverDot.className = 'status-dot error';
+                serverStatus.className = 'status-item server error';
+            }
+        }
+
+        // Update database status
+        function updateDatabaseStatus(status, text) {
+            const databaseDot = document.getElementById('databaseDot');
+            const databaseText = document.getElementById('databaseText');
+            const databaseStatus = document.getElementById('databaseStatus');
+            
+            databaseText.textContent = text;
+            
+            if (status === 'connected') {
+                databaseDot.className = 'status-dot';
+                databaseStatus.className = 'status-item database';
+            } else {
+                databaseDot.className = 'status-dot error';
+                databaseStatus.className = 'status-item database error';
+            }
+        }
+
+        // Initialize status checks
+        checkServerStatus();
     </script>
 </body>
 </html>
