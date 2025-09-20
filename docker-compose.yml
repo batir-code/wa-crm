@@ -1,4 +1,19 @@
 services:
+  code-init:
+    image: alpine:3.20
+    command: >
+      sh -lc '
+        mkdir -p /home/linuxuser/wa-crm/sessions &&
+        mkdir -p /home/linuxuser/wa-crm/media &&
+        mkdir -p /home/linuxuser/wa-crm/meta-media &&
+        mkdir -p /home/linuxuser/wa-crm/client/public &&
+        chown -R 33:33 /home/linuxuser/wa-crm/sessions /home/linuxuser/wa-crm/media /home/linuxuser/wa-crm/meta-media /home/linuxuser/wa-crm/client/public &&
+        chmod -R 775 /home/linuxuser/wa-crm/sessions /home/linuxuser/wa-crm/media /home/linuxuser/wa-crm/meta-media /home/linuxuser/wa-crm/client/public &&
+      '
+    volumes:
+      - /home/linuxuser/wa-crm:/home/linuxuser/wa-crm
+    restart: "no"
+
   app:
     build:
       context: .
@@ -6,6 +21,7 @@ services:
     restart: unless-stopped
     # ports:
     #   - "${PORT:-3010}:3010"
+    user: "${UID:-1000}:${GID:-1000}"
     env_file:
       - .env
     # environment:
@@ -46,10 +62,10 @@ services:
       # META_VERIFY_TOKEN: ${META_VERIFY_TOKEN:-}
       
     volumes:
-      - ./sessions:/app/sessions
-      - ./media:/app/media
-      - ./meta-media:/app/meta-media
-      - ./client/public:/app/client/public
+      - /home/linuxuser/wa-crm/sessions:/app/sessions
+      - /home/linuxuser/wa-crm/media:/app/media
+      - /home/linuxuser/wa-crm/meta-media:/app/meta-media
+      - /home/linuxuser/wa-crm/client/public:/app/client/public
     networks:
       - wa-crm-network
 
